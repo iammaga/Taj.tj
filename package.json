@@ -1,0 +1,21 @@
+{
+    "name": "your-project-name",
+    "private": true,
+    "scripts": {
+        "dev": "npm run development",
+        "development": "webpack --config=node_modules/laravel-mix/setup/webpack.config.js",
+        "watch": "npm run development -- --watch",
+        "prod": "npm run production",
+        "production": "webpack --config=node_modules/laravel-mix/setup/webpack.config.js --mode production"
+    },
+    "devDependencies": {
+        "autoprefixer": "^10.0.0",
+        "laravel-mix": "^6.0.49",
+        "postcss": "^8.0.0",
+        "tailwindcss": "^2.0.0"
+    },
+    "dependencies": {
+        "laravel-echo": "^2.0.2",
+        "pusher-js": "^8.4.0"
+    }
+}
