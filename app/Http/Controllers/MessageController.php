@@ -27,7 +27,7 @@ class MessageController extends Controller
             'message' => $validated['message'],
         ]);
 
-        event(new MessageSent($message));
+//        event(new MessageSent($message));
 
         return response()->json([
             'message' => 'Message sent successfully',
