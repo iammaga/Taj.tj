@@ -170,8 +170,10 @@ class AdController extends Controller
 
     public function getFavorites()
     {
-        $user = Auth::user();
-        return response()->json($user->favorites()->paginate(10));
+        $user = auth()->user();
+        $favorites = $user->favorites()->paginate(10);
+
+        return response()->json($favorites);
     }
 
     public function addReview(Request $request, $id)

@@ -22,35 +22,39 @@ Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login']);
-Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
+Route::prefix('auth')->group(function () {
+    Route::post('/register', [AuthController::class, 'register']);
+    Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
+});
 
-Route::get('/ads', [AdController::class, 'index']);
-Route::get('/ads/{id}', [AdController::class, 'show']);
-Route::post('/ads', [AdController::class, 'store'])->middleware('auth:sanctum');
-Route::put('/ads/{id}', [AdController::class, 'update'])->middleware('auth:sanctum');
-Route::delete('/ads/{id}', [AdController::class, 'destroy'])->middleware('auth:sanctum');
+Route::prefix('ads')->group(function () {
+    Route::get('/', [AdController::class, 'index']);
+    Route::get('/{id}', [AdController::class, 'show']);
+    Route::post('/', [AdController::class, 'store'])->middleware('auth:sanctum');
+    Route::put('/{id}', [AdController::class, 'update'])->middleware('auth:sanctum');
+    Route::delete('/{id}', [AdController::class, 'destroy'])->middleware('auth:sanctum');
 
-Route::get('/ads/category/{categoryId}', [AdController::class, 'adsByCategory']);
-Route::put('/ads/{id}', [AdController::class, 'update'])->middleware('auth:sanctum');
-Route::delete('/ads/{id}', [AdController::class, 'destroy'])->middleware('auth:sanctum');
-Route::post('/ads/{id}/favorite', [AdController::class, 'toggleFavorite'])->middleware('auth:sanctum');
-Route::get('/favorites', [AdController::class, 'getFavorites'])->middleware('auth:sanctum');
-Route::post('/ads/{id}/review', [AdController::class, 'addReview'])->middleware('auth:sanctum');
-Route::get('/ads/{id}/reviews', [AdController::class, 'getReviews']);
-
-Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/messages', [MessageController::class, 'sendMessage']);
-    Route::get('/messages', [MessageController::class, 'getMessages']);
-    Route::get('/messages/{userId}', [MessageController::class, 'getConversation']);
+    Route::get('/category/{categoryId}', [AdController::class, 'adsByCategory']);
+    Route::post('/{id}/favorite', [AdController::class, 'toggleFavorite'])->middleware('auth:sanctum');
+    Route::get('/favorites', [AdController::class, 'getFavorites'])->middleware('auth:sanctum');
+    Route::post('/{id}/review', [AdController::class, 'addReview'])->middleware('auth:sanctum');
+    Route::get('/{id}/reviews', [AdController::class, 'getReviews']);
 });
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/users', [UserController::class, 'index']);
-    Route::get('/users/me', [UserController::class, 'showMe']);
-    Route::get('/users/{id}', [UserController::class, 'show']);
-    Route::put('/users/{id}', [UserController::class, 'update']);
-    Route::delete('/users/{id}', [UserController::class, 'destroy']);
-    Route::put('/users/me/password', [UserController::class, 'updatePassword']);
+    Route::prefix('messages')->group(function () {
+        Route::post('/', [MessageController::class, 'sendMessage']);
+        Route::get('/', [MessageController::class, 'getMessages']);
+        Route::get('/{userId}', [MessageController::class, 'getConversation']);
+    });
+
+    Route::prefix('users')->group(function () {
+        Route::get('/', [UserController::class, 'index']);
+        Route::get('/me', [UserController::class, 'showMe']);
+        Route::get('/{id}', [UserController::class, 'show']);
+        Route::put('/{id}', [UserController::class, 'update']);
+        Route::delete('/{id}', [UserController::class, 'destroy']);
+        Route::put('/me/password', [UserController::class, 'updatePassword']);
+    });
 });

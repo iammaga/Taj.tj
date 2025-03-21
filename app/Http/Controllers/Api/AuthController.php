@@ -12,7 +12,6 @@ use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
-    // Регистрация нового пользователя
     public function register(Request $request)
     {
         $validated = $request->validate([
@@ -20,24 +19,32 @@ class AuthController extends Controller
             'phone' => 'required|string|max:20|unique:users',
             'email' => 'nullable|email|unique:users',
             'password' => 'required|string|min:8',
+            'role' => 'required|string|in:admin,user,seller',
         ]);
+
+        logger('User validated: ', $validated);
 
         $user = User::create([
             'name' => $validated['name'],
             'phone' => $validated['phone'],
-            'email' => $validated['email'],
+            'email' => $validated['email'] ?? null,
             'password' => Hash::make($validated['password']),
-            'role' => 'user', // Указываем роль по умолчанию
-            'is_verified' => false, // По умолчанию не подтвержден
+            'is_verified' => false,
         ]);
+
+        $user->syncRoles([$validated['role']]);
+
+        logger('User created: ', $user->toArray());
+
+        $token = $user->createToken('API Token')->plainTextToken;
 
         return response()->json([
             'message' => 'User successfully registered',
+            'token' => $token,
             'user' => $user,
         ], 201);
     }
 
-    // Авторизация пользователя
     public function login(Request $request)
     {
         $validated = $request->validate([
@@ -63,7 +70,6 @@ class AuthController extends Controller
         ]);
     }
 
-    // Логика для выхода пользователя (удаление токена)
     public function logout(Request $request)
     {
         $request->user()->tokens->each(function ($token) {
